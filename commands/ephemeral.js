@@ -1,4 +1,4 @@
-const { WA_DEFAULT_EPHEMERAL } = require('@whiskeyconnets/baileys');
+const { WA_DEFAULT_EPHEMERAL } = require('@whiskeysockets/baileys');
 
 module.exports = {
   command: 'ephemeral',
