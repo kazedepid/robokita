@@ -5,7 +5,7 @@
 
 */
 
-const { getContentType, generateWAMessageContent, generateForwardMessageContent, waUploadToServer, downloadContentFromMessage, jidDecode } = require('@whiskeyconnets/baileys');
+const { getContentType, generateWAMessageContent, generateForwardMessageContent, waUploadToServer, downloadContentFromMessage, jidDecode } = require('@whiskeysockets/baileys');
 const fs = require('fs');
 
 /**
@@ -40,17 +40,17 @@ module.exports = async (m, conn, store) => {
 
 
     m.msg = (m.mtype === 'viewOnceMessage' ? m.message[m.mtype].message[getContentType(m.message[m.mtype].message)] : m.message[m.mtype]);
-    m.replied = m.msg?.contextInfo ? m.m.contextInfo.quotedMessage : false;
-    m.mentions = m.msg?.contextInfo ? m.m.contextInfo.mentionedJid : [];
+    m.replied = m.msg?.contextInfo ? m.msg.contextInfo.quotedMessage : false;
+    m.mentions = m.msg?.contextInfo ? m.msg.contextInfo.mentionedJid : [];
     m.command = (m.text.includes(' ') ? m.text.split(' ')[0] : m.text).replace(m.text.charAt(0), '');
 
 
     if (m.replied) {
-      m.replied.id = m.m.contextInfo.stanzaId || false;
-      m.replied.chat = m.m.contextInfo.remoteJid || m.chat;
+      m.replied.id = m.msg.contextInfo.stanzaId || false;
+      m.replied.chat = m.msg.contextInfo.remoteJid || m.chat;
       m.replied.fromBot = m.replied.isBaileys = m.replied.id ? m.replied.id.startsWith('BAE5') && m.replied.id.length === 16 : false;
-      m.replied.sender = m.replied.from = m.m.contextInfo.participant || false;
-      m.replied.mentions = m.m.contextInfo ? m.m.contextInfo.mentionedJid : [];
+      m.replied.sender = m.replied.from = m.msg.contextInfo.participant || false;
+      m.replied.mentions = m.msg.contextInfo ? m.msg.contextInfo.mentionedJid : [];
       m.replied.fromMe = m.replied.me = m.replied.sender === m.me;
       m.replied.mtype = getContentType(m.replied);
       m.replied.viewonce = m.replied?.viewOnceMessage?.message || m.replied?.viewOnceMessageV2?.message || m.replied?.viewOnceMessageV2Extension?.message || false;
@@ -128,19 +128,19 @@ module.exports = async (m, conn, store) => {
   m.reply = async (message, options, jid = m.chat) => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     if (message.hasOwnProperty('text')) {
-      return await conn.sendMessage(jid, { text: message.text, mentions: (await m.getMentions(message.text)), ...message }, { quoted: msg, ...options });
+      return await conn.sendMessage(jid, { text: message.text, mentions: (await m.getMentions(message.text)), ...message }, { quoted: m, ...options });
     } else if (message.hasOwnProperty('image')) {
-      return await conn.sendMessage(jid, { image: message.image, caption: (message?.caption || ''), mimetype: (message?.mimetype || 'image/png'), thumbnail: Buffer.alloc(0), mentions: (await m.getMentions(message?.caption)), ...message }, { quoted: msg, ...options });
+      return await conn.sendMessage(jid, { image: message.image, caption: (message?.caption || ''), mimetype: (message?.mimetype || 'image/png'), thumbnail: Buffer.alloc(0), mentions: (await m.getMentions(message?.caption)), ...message }, { quoted: m, ...options });
     } else if (message.hasOwnProperty('video')) {
-      return await conn.sendMessage(jid, { video: message.video, caption: (message?.caption || ''), mimetype: (message?.mimetype || 'video/mp4'), thumbnail: Buffer.alloc(0), mentions: (await m.getMentions(message?.caption)), ...message }, { quoted: msg, ...options });
+      return await conn.sendMessage(jid, { video: message.video, caption: (message?.caption || ''), mimetype: (message?.mimetype || 'video/mp4'), thumbnail: Buffer.alloc(0), mentions: (await m.getMentions(message?.caption)), ...message }, { quoted: m, ...options });
     } else if (message.hasOwnProperty('audio')) {
-      return await conn.sendMessage(jid, { audio: message.audio, ptt: (message?.ptt || false), mimetype: (message?.mimetype || 'audio/mpeg'), waveform: Array(40).fill().map(() => Math.floor(Math.random() * 99)), ...message }, { quoted: msg, ...options });
+      return await conn.sendMessage(jid, { audio: message.audio, ptt: (message?.ptt || false), mimetype: (message?.mimetype || 'audio/mpeg'), waveform: Array(40).fill().map(() => Math.floor(Math.random() * 99)), ...message }, { quoted: m, ...options });
     } else if (message.hasOwnProperty('document')) {
-      return await conn.sendMessage(jid, { document: message.document, caption: (message?.caption || ''), mimetype: (message?.mimetype || 'application/pdf'), mentions: (await m.getMentions(message?.caption)), ...message }, { quoted: msg, ...options });
+      return await conn.sendMessage(jid, { document: message.document, caption: (message?.caption || ''), mimetype: (message?.mimetype || 'application/pdf'), mentions: (await m.getMentions(message?.caption)), ...message }, { quoted: m, ...options });
     } else if (message.hasOwnProperty('sticker')) {
-      return await conn.sendMessage(jid, { sticker: message.sticker, mimetype: (message?.mimetype || 'image/webp'), ...message }, { quoted: msg, ...options });
+      return await conn.sendMessage(jid, { sticker: message.sticker, mimetype: (message?.mimetype || 'image/webp'), ...message }, { quoted: m, ...options });
     } else if (message.hasOwnProperty('poll')) {
-      return await conn.sendMessage(jid, { poll: { name: message.poll.title, values: message.poll.options }, mentions: (await m.getMentions(message.title + '\n' + String(message.poll.options))), ...message }, { quoted: msg, ...options });
+      return await conn.sendMessage(jid, { poll: { name: message.poll.title, values: message.poll.options }, mentions: (await m.getMentions(message.title + '\n' + String(message.poll.options))), ...message }, { quoted: m, ...options });
     } else if (message.hasOwnProperty('delete')) {
       return await conn.sendMessage(jid, { delete: message.delete.key });
     } else if (message.hasOwnProperty('edit')) {
@@ -238,5 +238,5 @@ module.exports = async (m, conn, store) => {
     }
   }
 
-  return msg;
+  return m;
 }
