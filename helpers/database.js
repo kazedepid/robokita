@@ -1,5 +1,4 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const DATABASE_URL = "postgresql://apapun:XehPTjBHo3xs5d6lamV13w@apapun-2416.jxf.gcp-asia-southeast1.cockroachlabs.cloud:26257/defaultdb?sslmode=verify-full"
 
 const database = DATABASE_URL == 'robokita.db' ? new Sequelize({ 
  dialect: 'sqlite', 
