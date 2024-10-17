@@ -18,6 +18,8 @@ const pino = require('pino');
 const colors = require('colors');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
+const { ADMINS, MODE, PREFIX, PLATFORM, DEBUG } = require('./config');
+const { SESSION } = require('./auth');
 const { handleSwicth } = require('./case'); 
 
 if (PLATFORM == 'koyeb') {
